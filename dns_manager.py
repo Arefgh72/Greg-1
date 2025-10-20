@@ -7,6 +7,10 @@ from languages import get_text, texts
 from arabic_reshaper import reshape
 from bidi.algorithm import get_display
 
+# Set console to UTF-8
+os.system("chcp 65001")
+os.system("cls") # Clear the console screen
+
 # Global variable to hold the selected language
 selected_language = 'en'
 
