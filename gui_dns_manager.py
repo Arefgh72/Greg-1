@@ -17,28 +17,27 @@ class EntryWithContextMenu(ctk.CTkEntry):
         self.context_menu.tk_popup(event.x_root, event.y_root)
 
     def cut(self):
-        try:
-            selected_text = self.get(ctk.SEL_FIRST, ctk.SEL_LAST)
+        if self.selection_present():
+            selected_text = self.selection_get()
             self.clipboard_clear()
             self.clipboard_append(selected_text)
-            self.delete(ctk.SEL_FIRST, ctk.SEL_LAST)
-        except TclError:
-            pass # No selection
+            self.delete("sel.first", "sel.last")
 
     def copy(self):
-        try:
-            selected_text = self.get(ctk.SEL_FIRST, ctk.SEL_LAST)
+        if self.selection_present():
+            selected_text = self.selection_get()
             self.clipboard_clear()
             self.clipboard_append(selected_text)
-        except TclError:
-            pass # No selection
 
     def paste(self):
         try:
             clipboard_text = self.clipboard_get()
-            self.insert(self.index(ctk.INSERT), clipboard_text)
+            if self.selection_present():
+                self.delete("sel.first", "sel.last")
+            self.insert("insert", clipboard_text)
         except TclError:
-            pass # Clipboard is empty
+            # This can happen if the clipboard is empty or contains non-text data
+            pass
 
 class AddDnsWindow(ctk.CTkToplevel):
     def __init__(self, master):
