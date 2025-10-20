@@ -1,6 +1,6 @@
 
 import customtkinter as ctk
-from tkinter import messagebox, Menu
+from tkinter import messagebox, Menu, TclError
 import backend
 from languages import texts
 
@@ -17,13 +17,28 @@ class EntryWithContextMenu(ctk.CTkEntry):
         self.context_menu.tk_popup(event.x_root, event.y_root)
 
     def cut(self):
-        self.event_generate("<<Cut>>")
+        try:
+            selected_text = self.get(ctk.SEL_FIRST, ctk.SEL_LAST)
+            self.clipboard_clear()
+            self.clipboard_append(selected_text)
+            self.delete(ctk.SEL_FIRST, ctk.SEL_LAST)
+        except TclError:
+            pass # No selection
 
     def copy(self):
-        self.event_generate("<<Copy>>")
+        try:
+            selected_text = self.get(ctk.SEL_FIRST, ctk.SEL_LAST)
+            self.clipboard_clear()
+            self.clipboard_append(selected_text)
+        except TclError:
+            pass # No selection
 
     def paste(self):
-        self.event_generate("<<Paste>>")
+        try:
+            clipboard_text = self.clipboard_get()
+            self.insert(self.index(ctk.INSERT), clipboard_text)
+        except TclError:
+            pass # Clipboard is empty
 
 class AddDnsWindow(ctk.CTkToplevel):
     def __init__(self, master):
