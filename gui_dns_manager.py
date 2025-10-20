@@ -1,8 +1,29 @@
 
 import customtkinter as ctk
-from tkinter import messagebox
+from tkinter import messagebox, Menu
 import backend
 from languages import texts
+
+class EntryWithContextMenu(ctk.CTkEntry):
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+        self.context_menu = Menu(self, tearoff=0)
+        self.context_menu.add_command(label="Cut", command=self.cut)
+        self.context_menu.add_command(label="Copy", command=self.copy)
+        self.context_menu.add_command(label="Paste", command=self.paste)
+        self.bind("<Button-3>", self.show_context_menu)
+
+    def show_context_menu(self, event):
+        self.context_menu.tk_popup(event.x_root, event.y_root)
+
+    def cut(self):
+        self.event_generate("<<Cut>>")
+
+    def copy(self):
+        self.event_generate("<<Copy>>")
+
+    def paste(self):
+        self.event_generate("<<Paste>>")
 
 class AddDnsWindow(ctk.CTkToplevel):
     def __init__(self, master):
@@ -12,11 +33,11 @@ class AddDnsWindow(ctk.CTkToplevel):
         self.grab_set()
         self.resizable(False, False)
 
-        self.name_entry = ctk.CTkEntry(self, width=250)
+        self.name_entry = EntryWithContextMenu(self, width=250)
         self.name_entry.pack(padx=20, pady=(20, 5))
-        self.primary_entry = ctk.CTkEntry(self, width=250)
+        self.primary_entry = EntryWithContextMenu(self, width=250)
         self.primary_entry.pack(padx=20, pady=5)
-        self.secondary_entry = ctk.CTkEntry(self, width=250)
+        self.secondary_entry = EntryWithContextMenu(self, width=250)
         self.secondary_entry.pack(padx=20, pady=5)
         self.save_button = ctk.CTkButton(self, command=self.save_dns)
         self.save_button.pack(padx=20, pady=(10, 20))
