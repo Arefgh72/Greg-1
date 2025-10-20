@@ -17,14 +17,14 @@ class EntryWithContextMenu(ctk.CTkEntry):
         self.context_menu.tk_popup(event.x_root, event.y_root)
 
     def cut(self):
-        if self.selection_present():
+        if self.select_present():
             selected_text = self.selection_get()
             self.clipboard_clear()
             self.clipboard_append(selected_text)
             self.delete("sel.first", "sel.last")
 
     def copy(self):
-        if self.selection_present():
+        if self.select_present():
             selected_text = self.selection_get()
             self.clipboard_clear()
             self.clipboard_append(selected_text)
@@ -32,7 +32,7 @@ class EntryWithContextMenu(ctk.CTkEntry):
     def paste(self):
         try:
             clipboard_text = self.clipboard_get()
-            if self.selection_present():
+            if self.select_present():
                 self.delete("sel.first", "sel.last")
             self.insert("insert", clipboard_text)
         except TclError:
